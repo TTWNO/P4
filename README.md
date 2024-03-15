@@ -64,8 +64,11 @@ poetry install
 Packaging the compiler makes it possible to run the compiler without having to install the dependencies, poetry or python
 
 ```
+# for windows
+poetry run pyinstaller compiler.win.spec
 
-poetry run pyinstaller compoer.spec
+# FOr Mac
+poetry run pyinstaller compiler.mac.spec
 
 ```
 
