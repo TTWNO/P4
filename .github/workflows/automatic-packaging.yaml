@@ -42,3 +42,11 @@ jobs:
       - name: Package for MacOS
         run: poetry run pyinstaller --clean --noconfirm compiler.mac.spec
         if: runner.os == 'MacOS'
+        name: Tar the contents of the dist folder
+        run: tar -czvf dist/p4compiler-${{ matrix.os }}-distributions.tar.gz dist/
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: p4compiler-${{ matrix.os }}-distributions
+          path: dist/p4compiler-${{ matrix.os }}-distributions.tar.gz
+        
