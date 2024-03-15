@@ -1,0 +1,44 @@
+name: Automatic Packaging
+
+on: [push, pull_request]
+
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-13, windows-2022]
+        python-version: [ "3.11", ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up python
+        id: setup-python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install and configure Poetry
+        run: |
+          pip3 install -U poetry
+          poetry config virtualenvs.in-project true
+      - name: Set up cache
+        uses: actions/cache@v4
+        id: cached-poetry-dependencies
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ runner.arch }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+      - name: Install dependencies
+        run: poetry install
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      - name: Package for Windows
+        run: poetry run pyinstaller --clean --noconfirm compiler.win.spec
+        if: runner.os == 'Windows'
+      - name: Package for MacOS
+        run: poetry run pyinstaller --clean --noconfirm compiler.mac.spec
+        if: runner.os == 'MacOS'
