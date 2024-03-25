@@ -1,4 +1,6 @@
-from Token      import Token
+from IllegalCharacterException import IllegalCharacterException
+from Position import Position
+from Token import Token
 from Dictionary import Dictionary
 
 OPERATOR_DICTIONARY = Dictionary.operators
@@ -8,10 +10,10 @@ NUMERIC_CHARACTERS  = Dictionary.NUMERIC_CHARACTERS
 
 class Lexer:
     def __init__(self, input):
-        self.input = input                      # Input string
-        self.position = -1                      # Current position in the input
-        self.current_character = None           # Current character in the input
-        self.next_character()                   # Advance to the first character
+        self.input = input                          # Input string
+        self.position = Position(0, -1, -1)     # Current position in the input file
+        self.current_character = None               # Current character in the input
+        self.next_character()                       # Advance to the first character
 
     @staticmethod
     def analyze(text_input):
@@ -21,9 +23,9 @@ class Lexer:
 
     # Advance to the next character in the input
     def next_character(self):
-        self.position += 1
-        if self.position < len(self.input):
-            self.current_character = self.input[self.position]
+        self.position.update(self.current_character)
+        if self.position.index < len(self.input):
+            self.current_character = self.input[self.position.index]
         else:
             self.current_character = None       # Reached the end of input
 
@@ -36,10 +38,10 @@ class Lexer:
             elif self.current_character in OPERATOR_DICTIONARY:
                 tokens.append(OPERATOR_DICTIONARY[self.current_character])
                 self.next_character()
-            elif self.current_character in ' \t':             # Ignore whitespaces and tabs
+            elif self.current_character in " \n\t":             # Ignore whitespaces and tabs
                 self.next_character()
             else:
-                raise Exception(f"Invalid character: {self.current_character}")
+                raise IllegalCharacterException("IllegalCharacterException", self.current_character, self.position)
 
         return tokens
 

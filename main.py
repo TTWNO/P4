@@ -1,14 +1,17 @@
+import sys
+
+from IllegalCharacterException import IllegalCharacterException
 from Lexer import Lexer
 
-print("Tokenizor ('exit' to quit):")
+FILE = "text_input.txt"
 
-while True:
-    try:
-        text_input = input('> ')
-        if text_input == 'exit':
-            break
-        result = Lexer.analyze(text_input)
-        print(result)
-    except Exception as e:
-        print(e)
-        break
+try:
+    with open(FILE, "r") as file:
+        text_input = file.read()
+
+    result = Lexer.analyze(text_input)
+    print(result)
+except IllegalCharacterException as e:
+    sys.stderr.write(str(e))
+except FileNotFoundError:
+    print(f"File '{FILE}' not found.")
