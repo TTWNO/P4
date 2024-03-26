@@ -15,15 +15,23 @@ logger = logging.getLogger(__name__)
 def main():
     parser = argparse.ArgumentParser(description='Compile a program')
     parser.add_argument('source', help='Source file')
+    parser.add_argument('-o', '--output', help='Output file')
     args = parser.parse_args()
 
     if not args.source:
         parser.print_help()
         return
-    
     if not os.path.exists(args.source):
         logger.error(f"File '{args.source}' not found.")
         return
+    if args.output:
+        if not args.output.endswith('.py'):
+            logger.error("Output file must be a Python file.")
+            return
+        if os.path.exists(args.output):
+            logger.error(f"Output file '{args.output}' already exists.")
+            return
+
     logger.info(f"Compiling {args.source}")
     f = open(args.source, "r")
     program_contents = f.read()
@@ -47,6 +55,12 @@ def main():
         return
     logger.info("Code generation complete.")
     logger.info(f"Python code:\n{python_code}")
+    if args.output:
+        logger.info(f"Writing to {args.output}")
+        f = open(args.output, "w")
+        f.write(python_code)
+        f.close()
+        logger.info("Done.")
 
 
 
