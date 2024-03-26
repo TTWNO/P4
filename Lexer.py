@@ -1,6 +1,5 @@
 import logging
 
-from IllegalCharacterException import IllegalCharacterException
 from Position import Position
 from Token import Token
 from Dictionary import Dictionary
