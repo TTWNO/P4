@@ -3,6 +3,9 @@ import logging
 import argparse
 
 from  Lexer import Lexer
+from custom_parser import Parser
+from code_generator import CodeGenerator
+
 # setting basic config so we can log some debug information throughout the program
 logging.basicConfig(level=logging.DEBUG)
 
@@ -30,6 +33,15 @@ def main():
         logger.error("Compilation failed.")
         return
     logger.debug(f"Tokens:\n{tokens}")
+    parser = Parser(tokens)
+    parsing_result = parser.parse()
+    logger.debug(f"Result: {parsing_result}")
+    logger.info("Generating code...")
+    code_generator = CodeGenerator()
+    python_code = code_generator.generate(parsing_result)
+    logger.info("Code generation complete.")
+    logger.info(f"Python code:\n{python_code}")
+
 
 
 if __name__ == '__main__':
