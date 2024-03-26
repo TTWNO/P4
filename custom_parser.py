@@ -1,14 +1,14 @@
 import logging
 
+from Dictionary import Dictionary
 from parser_nodes import NumberNode, BinaryOperationNode
 
 logger = logging.getLogger(__name__)
 
 class Parser:
     def __init__(self, tokens):
-        self.tokens = tokens
+        self.tokens = tokens # the tokens we got from the lexer
         self.current_index = 0
-        logger.debug(f"Tokens: {self.tokens}")
 
     def peek(self):
         if self.current_index < len(self.tokens):
@@ -46,13 +46,13 @@ class Parser:
     def factor(self):
         # Number or parenthesized expression
         token = self.peek()
-        if token.type in ['INT', 'FLOAT']:
+        if token.type in [Dictionary.INTEGER, Dictionary.FLOAT]:
             self.consume()
             return NumberNode(token.value)
-        elif token.type == 'L_PRNTH':
-            self.consume('L_PRNTH')
+        elif token.type == Dictionary.LEFT_PARENTHESES:
+            self.consume(Dictionary.LEFT_PARENTHESES)
             node = self.expression()
-            self.consume('R_PRNTH')
+            self.consume(Dictionary.RIGHT_PARENTHESES)
             return node
         else:
             raise Exception(f"Unexpected token {token.type}")

@@ -1,3 +1,5 @@
+"""This module contains the classes for the nodes of the abstract syntax tree (AST) of the parser."""
+
 class BinaryOperationNode:
     def __init__(self, left, operator, right):
         self.left = left
