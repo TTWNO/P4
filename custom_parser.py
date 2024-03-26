@@ -18,7 +18,8 @@ class Parser:
     def consume(self, expected_type=None):
         current_token = self.peek()
         if expected_type and (current_token is None or current_token.type != expected_type):
-            raise Exception(f"Expected token type {expected_type} but got {current_token.type if current_token else 'None'}")
+            logger.error(f"Expected token type {expected_type} but got {current_token.type if current_token else 'None'}")
+            return None
         self.current_index += 1
         return current_token
 
@@ -55,4 +56,6 @@ class Parser:
             self.consume(Dictionary.RIGHT_PARENTHESES)
             return node
         else:
-            raise Exception(f"Unexpected token {token.type}")
+            logger.error(f"Unexpected token {token.type}")
+            return None
+        

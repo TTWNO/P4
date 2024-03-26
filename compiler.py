@@ -35,10 +35,16 @@ def main():
     logger.debug(f"Tokens:\n{tokens}")
     parser = Parser(tokens)
     parsing_result = parser.parse()
+    if not parsing_result:
+        logger.error("Compilation failed.")
+        return
     logger.debug(f"Result: {parsing_result}")
     logger.info("Generating code...")
-    code_generator = CodeGenerator()
-    python_code = code_generator.generate(parsing_result)
+    code_generator = CodeGenerator(parsing_result)
+    python_code = code_generator.generate()
+    if not python_code:
+        logger.error("Code generation failed.")
+        return
     logger.info("Code generation complete.")
     logger.info(f"Python code:\n{python_code}")
 
