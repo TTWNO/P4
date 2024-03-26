@@ -26,6 +26,9 @@ def main():
     program_contents = f.read()
     f.close()
     tokens = Lexer.analyze(program_contents)
+    if not tokens:
+        logger.error("Compilation failed.")
+        return
     logger.debug(f"Tokens:\n{tokens}")
 
 

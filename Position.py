@@ -15,3 +15,8 @@ class Position:
             self.column = 0     # Reset column number
 
         return self
+    
+    def __str__(self):
+        # to get the correct row and column number, we add 1 to each, since they are zero-indexed
+        return f"line {self.row + 1}, column {self.column + 1}"
+    

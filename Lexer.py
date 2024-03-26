@@ -1,3 +1,5 @@
+import logging
+
 from IllegalCharacterException import IllegalCharacterException
 from Position import Position
 from Token import Token
@@ -7,6 +9,8 @@ OPERATOR_DICTIONARY = Dictionary.operators
 FLOAT               = Dictionary.FLOAT
 INTEGER             = Dictionary.INTEGER
 NUMERIC_CHARACTERS  = Dictionary.NUMERIC_CHARACTERS
+
+logger = logging.getLogger(__name__)
 
 class Lexer:
     def __init__(self, input):
@@ -34,14 +38,18 @@ class Lexer:
 
         while self.current_character is not None:
             if self.current_character in NUMERIC_CHARACTERS:
+                logger.debug(f"Digitizing: {self.current_character}")
                 tokens.append(self.digitize())
             elif self.current_character in OPERATOR_DICTIONARY:
+                logger.debug(f"Operator: {self.current_character}")
                 tokens.append(OPERATOR_DICTIONARY[self.current_character])
                 self.next_character()
             elif self.current_character in " \n\t":             # Ignore whitespaces and tabs
+                logger.debug(f"Ignoring whitespace: {self.current_character}")
                 self.next_character()
             else:
-                raise IllegalCharacterException("IllegalCharacterException", self.current_character, self.position)
+                logger.error(f"Illegal character: \"{self.current_character}\" at {self.position}")
+                return
 
         return tokens
 
