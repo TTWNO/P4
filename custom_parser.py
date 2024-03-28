@@ -1,13 +1,13 @@
 import logging
 
-from Dictionary import Dictionary
+from dictionary import Dictionary
 from parser_nodes import NumberNode, BinaryOperationNode
 
 logger = logging.getLogger(__name__)
 
 class Parser:
     def __init__(self, tokens):
-        self.tokens = tokens # the tokens we got from the lexer
+        self.tokens = tokens        # The token list we got from the lexer
         self.current_index = 0
 
     def peek(self):

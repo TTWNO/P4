@@ -1,6 +1,6 @@
 import logging
 
-from Dictionary import Dictionary
+from dictionary import Dictionary
 
 logger = logging.getLogger(__name__)
 
@@ -27,10 +27,10 @@ class CodeGenerator:
         return None
 
     def generate_header(self):
-        return "# This is the header"
+        return "# HEADER"
 
     def generate_footer(self):
-        return "# This is the footer"
+        return "# FOOTER"
 
     # Node-specific generation methods follow...
     def generate_NumberNode(self, node):

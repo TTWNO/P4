@@ -2,20 +2,20 @@ import os
 import logging
 import argparse
 
-from  Lexer import Lexer
+from lexer import Lexer
 from custom_parser import Parser
 from code_generator import CodeGenerator
 
-# setting basic config so we can log some debug information throughout the program
-logging.basicConfig(level=logging.DEBUG)
+# Setting basic config so we can log some debug information throughout the program
+logging.basicConfig(level = logging.DEBUG)
 
-# this is what we want to call in each file, to get a specific logger for that part of the compiler.
+# This is what we want to call in each file, to get a specific logger for that part of the compiler.
 logger = logging.getLogger(__name__)
 
 def main():
-    parser = argparse.ArgumentParser(description='Compile a program')
-    parser.add_argument('source', help='Source file')
-    parser.add_argument('-o', '--output', help='Output file')
+    parser = argparse.ArgumentParser(description = 'Compile a program')
+    parser.add_argument('source', help = 'Source file')
+    parser.add_argument('-o', '--output', help = 'Output file')
     args = parser.parse_args()
 
     if not args.source:
@@ -33,28 +33,47 @@ def main():
             return
 
     logger.info(f"Compiling {args.source}")
+
+    # Read the contents of the file
     f = open(args.source, "r")
-    program_contents = f.read()
+    program_contents = f.read()     # Returns a string
     f.close()
-    tokens = Lexer.analyze(program_contents)
-    if not tokens:
-        logger.error("Compilation failed.")
+
+    # Tokenize the program if contents are not empty
+    if program_contents:
+        lexer = Lexer(program_contents)
+        tokens = lexer.tokenize()
+
+        # Print error if token list comes back empty
+        if not tokens:
+            logger.error("Lexical analysis failed!")
+            return
+    else:
+        logger.error("Empty file!")
         return
+
+    # Parse tokens
     logger.debug(f"Tokens:\n{tokens}")
     parser = Parser(tokens)
     parsing_result = parser.parse()
+
     if not parsing_result:
-        logger.error("Compilation failed.")
+        logger.error("Parsing failed!")
         return
+
+    # Generate code
     logger.debug(f"Result: {parsing_result}")
     logger.info("Generating code...")
     code_generator = CodeGenerator(parsing_result)
     python_code = code_generator.generate()
+
     if not python_code:
-        logger.error("Code generation failed.")
+        logger.error("Code generation failed!")
         return
+
     logger.info("Code generation complete.")
     logger.info(f"Python code:\n{python_code}")
+
     if args.output:
         logger.info(f"Writing to {args.output}")
         f = open(args.output, "w")
@@ -62,7 +81,5 @@ def main():
         f.close()
         logger.info("Done.")
 
-
-
 if __name__ == '__main__':
-    main()      
+    main()
