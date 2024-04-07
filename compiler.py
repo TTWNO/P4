@@ -39,6 +39,10 @@ def main():
     program_contents = f.read()     # Returns a string
     f.close()
 
+    # Make sure we use the correct line endings (only \n instead of \r\n)
+    # This is to support both Windows and Unix (MacOS) line endings
+    program_contents.replace("\r\n", "\n")
+
     # Tokenize the program if contents are not empty
     if program_contents:
         lexer = Lexer(program_contents)
