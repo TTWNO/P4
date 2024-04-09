@@ -1,2 +1,2 @@
-if 2*6 is equal to 12
+if 2*3 is equal to 1337
 	ost42 = 69

@@ -86,30 +86,25 @@ class Lexer:
         else:
             return Token(INTEGER, int(numeral_string))
 
-    # TODO: implement support for operators like 'is equal to' work
+    # TODO: implement support for multi-word logical operators like 'is equal to', 'is not', etc.
     # Tokenize keywords and identifiers
     def keyword_tokenize(self):
         alphanumerical_string = ""
-
-        # if the input string at the current index position starts with one of the operators that are more than one character long
-        # then return 
-        if self.input_string[self.position.index].startswith('is equal to'):
-            return OPERATOR_DICTIONARY['is equal to']
 
         # Loop the input string for a sequence of alphabetic characters
         while (self.current_character is not None) and (self.current_character in ALPHABETIC_CHARACTERS or self.current_character in NUMERIC_CHARACTERS):
             alphanumerical_string += self.current_character
             
-            # Break out if next character is not an alphanumerical character
+            # Break out on white spaces and escape characters
             if self.peek() in ESCAPE_DICTIONARY:
                 break
             else:
                 self.next_character()
 
         # Return keyword or identifier token
-        """ if alphanumerical_string in OPERATOR_DICTIONARY:
-            return OPERATOR_DICTIONARY[alphanumerical_string] """
-        if alphanumerical_string in Dictionary.KEYWORDS:
+        if alphanumerical_string in OPERATOR_DICTIONARY:
+            return OPERATOR_DICTIONARY[alphanumerical_string]       # This doens't work as we break out on white spaces...
+        elif alphanumerical_string in Dictionary.KEYWORDS:
             return Token(Dictionary.KEYWORD, alphanumerical_string)
         else:
             return Token(Dictionary.IDENTIFIER, alphanumerical_string)
