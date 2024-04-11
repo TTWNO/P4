@@ -5,6 +5,10 @@ class Position:
         self.column = column
         self.index = index
 
+    def decrement(self, current_character):
+        self.column -= 1
+        self.index -= 1
+
     # Advance to next column and index, and possibly next row
     def increment(self, current_character):
         self.column += 1

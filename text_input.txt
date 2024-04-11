@@ -1,2 +1,2 @@
-if 2*3 is equal to 1337
+if 2*3 is equal not to 1337
 	ost42 = 69

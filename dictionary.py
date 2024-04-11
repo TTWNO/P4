@@ -3,7 +3,9 @@ from Token import Token
 class Dictionary:
     NUMERIC_CHARACTERS  = '0123456789.'
     ALPHABETIC_CHARACTERS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-    KEYWORDS = ['if', 'else if', 'else', 'return']
+    KEYWORDS = ['if', 'else if', 'else', 'return', 'is']
+    multi_word_keyword_parts = ["not", "equal", "to"]
+    multi_word_keywords = ["is equal to", "is not equal to"]
 
     # TOKEN TYPES
     INTEGER             = 'INT'
@@ -20,7 +22,9 @@ class Dictionary:
     KEYWORD             = 'KW'
     IDENTIFIER          = 'ID'
     ASSIGNMENT          = 'ASSIGN'
-    EQUAL_TO            = '=='
+    IS_EQUAL_TO         = '=='
+    IS_NOT_EQUAL_TO     = '!='
+    
 
     operators = {
         '+': Token(PLUS),
@@ -30,8 +34,8 @@ class Dictionary:
         '(': Token(LEFT_PARENTHESES),
         ')': Token(RIGHT_PARENTHESES),
         '=': Token(ASSIGNMENT),
-        'is': Token(ASSIGNMENT),
-        'is equal to': Token(EQUAL_TO)
+        #'is': Token(ASSIGNMENT),
+        #'is equal to': Token(EQUAL_TO)
     }
 
     escape_characters = {

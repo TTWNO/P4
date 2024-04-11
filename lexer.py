@@ -5,6 +5,7 @@ from Token import Token
 from dictionary import Dictionary
 
 OPERATOR_DICTIONARY     = Dictionary.operators
+#MULTI_WORD_OPERATORS    = set(Dictionary.multi_word_operators)
 ESCAPE_DICTIONARY       = Dictionary.escape_characters
 FLOAT                   = Dictionary.FLOAT
 INTEGER                 = Dictionary.INTEGER
@@ -31,6 +32,15 @@ class Lexer:
         else:
             self.current_character = None       # Reached the end of input
 
+    # Move focus back to the previous character in the input
+    def previous_character(self):
+        # Decrement position
+        self.position.decrement(self.current_character)
+
+        # Update current character
+        if self.position.index >= 0:
+            self.current_character = self.input_string[self.position.index]
+
     # Return a list of tokens from the input string
     def tokenize(self):
         tokens = []
@@ -45,7 +55,11 @@ class Lexer:
                 tokens.append(OPERATOR_DICTIONARY[self.current_character])
             # Keywords and identifiers
             elif self.current_character in ALPHABETIC_CHARACTERS:
-                tokens.append(self.keyword_tokenize())
+                generated_token = self.keyword_tokenize()
+                if generated_token is not None:
+                    tokens.append(self.keyword_tokenize())
+                else:
+                    return None
             # White spaces and escape characters
             elif self.current_character in ESCAPE_DICTIONARY:
                 tokens.append(self.escape_tokenize())
@@ -102,11 +116,33 @@ class Lexer:
                 self.next_character()
 
         # Return keyword or identifier token
-        if alphanumerical_string in OPERATOR_DICTIONARY:
-            return OPERATOR_DICTIONARY[alphanumerical_string]       # This doens't work as we break out on white spaces...
-        elif alphanumerical_string in Dictionary.KEYWORDS:
-            return Token(Dictionary.KEYWORD, alphanumerical_string)
-        else:
+        if alphanumerical_string in Dictionary.KEYWORDS:
+            if alphanumerical_string != "is":
+                return Token(Dictionary.KEYWORD, alphanumerical_string)
+            else: # first part of a multi-word operator
+                multi_word_keyword = "is "
+                self.next_character() # skip whitespace after is
+                while True:
+                    word = self.peek_until_escape_character()
+                    if word in Dictionary.multi_word_keyword_parts:
+                        multi_word_keyword += word + " "
+                        continue
+                    else: 
+                        multi_word_keyword = multi_word_keyword.strip() # remove trailing space in the string
+                        self.go_back_n(len(word) + 1) # go back to before the token we couldn't use, so this loop doesn't swallow it
+                        break
+                
+                # we have a multi-word keyword to work with.
+                if multi_word_keyword not in Dictionary.multi_word_keywords:
+                    # there was an error in the input
+                    self.go_back_n(len(multi_word_keyword))
+                    logger.error(f"Syntax error: Invalid multi-word operator: {multi_word_keyword} at {self.position}")
+                    return None
+                
+            if multi_word_keyword in Dictionary.multi_word_operators:
+                return Token(Dictionary.multi_word_operators[multi_word_keyword], multi_word_keyword)
+           
+        else: # it wasn't a keyword, so it must be an identifier
             return Token(Dictionary.IDENTIFIER, alphanumerical_string)
 
     # Tokenize white spaces and escape characters (newline and tab)
@@ -119,3 +155,33 @@ class Lexer:
             return self.input_string[self.position.index + 1]
         else:
             return None
+        
+    # Peeks n-characters ahead and returns the string
+    def peek_n(self, n):
+        if self.position.index + n < len(self.input_string):
+            return self.input_string[self.position.index:self.position.index + n]
+        else:
+            return None
+        
+    # Peek until white space or escape character is found
+    def peek_until_escape_character(self):
+        peeked_string = ""
+        while True:
+            temp_string = self.peek()
+            if temp_string in ESCAPE_DICTIONARY:
+                self.next_character()
+                break
+            peeked_string += temp_string
+            self.next_character()
+            
+        return peeked_string
+        
+    # Advance n-characters in the input
+    def advance_n(self, n):
+        for _ in range(n):
+            self.next_character()
+
+    # Go back n-characters in the input
+    def go_back_n(self, n):
+        for _ in range(n):
+            self.previous_character()
