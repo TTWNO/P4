@@ -5,9 +5,9 @@ class Position:
         self.column = column
         self.index = index
 
-    def decrement(self, current_character):
+    """ def decrement(self):
         self.column -= 1
-        self.index -= 1
+        self.index -= 1 """
 
     # Advance to next column and index, and possibly next row
     def increment(self, current_character):
@@ -18,8 +18,6 @@ class Position:
         if current_character == "\n":
             self.row += 1
             self.column = 0     # Reset column number
-
-        return self
     
     def __str__(self):
         # To get the correct row and column number, we add 1 to each, since they are zero-indexed
