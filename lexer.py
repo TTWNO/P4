@@ -1,3 +1,4 @@
+import sys
 import logging
 
 from position import Position
@@ -57,7 +58,7 @@ class Lexer:
                 tokens.append(self.escape_tokenize())
             else:
                 logger.error(f"Illegal character: \'{self.current_character}\' at {self.position}")
-                exit(1)
+                sys.exit(1)
 
             self.next_character()
 
@@ -149,7 +150,7 @@ class Lexer:
             return Token(Dictionary.ASSIGNMENT)
         else:
             logger.error(f"Syntax error: Invalid multi-word operator: '{alphanumerical_string}' at {self.position}")
-            exit(1)
+            sys.exit(1)
 
     # Peek a word ahead (until a white space or escape character is encountered)   
     def peek_word_ahead(self):
