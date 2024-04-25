@@ -157,12 +157,12 @@ class Lexer:
         peeked_word = ""
         current_index = self.position.index + 1
         
-        # Skip white spaces
+        # Skip leading white space
         if self.input_string[current_index] == ' ':
             peeked_word += ' '
             current_index += 1
 
-        # Loop until white space or escape character is found
+        # Loop until next white space or escape character is found
         while (current_index < len(self.input_string)) and (self.input_string[current_index] not in ESCAPE_DICTIONARY):
             peeked_word += self.input_string[current_index]
             current_index += 1

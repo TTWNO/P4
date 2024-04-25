@@ -1,4 +1,2 @@
-if 2 + 2 is equal to 4
-	abe42 is 69
-	2 is less than 5
-	69 is greater than or equal to 42
+(2+3)*2
+	
