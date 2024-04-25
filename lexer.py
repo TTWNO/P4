@@ -47,10 +47,10 @@ class Lexer:
             # Digits
             if self.current_character in NUMERIC_CHARACTERS:
                 tokens.append(self.digit_tokenize())
-            # Operators (single symbols)
+            # Arithmetic operators (single symbols)
             elif self.current_character in OPERATOR_DICTIONARY:
                 tokens.append(OPERATOR_DICTIONARY[self.current_character])
-            # Keywords, identifiers and multi-word operators
+            # Keywords, identifiers and multi-word arithmetic operators
             elif self.current_character in ALPHABETIC_CHARACTERS:
                 tokens.append(self.keyword_tokenize())
             # White spaces and escape characters
