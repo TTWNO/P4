@@ -108,7 +108,7 @@ class Parser:
             while i < len(tokens) and tokens[i].type not in condition_identifiers:
                 condition_part.append(tokens[i])
                 i += 1
-            condition.append(self.parse_expression(condition_part))
+            condition.append([self.parse_expression(condition_part)])
             if i == len(tokens):
                 break
             condition.append(tokens[i].type)
