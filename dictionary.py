@@ -4,13 +4,6 @@ class Dictionary:
     NUMERIC_CHARACTERS  = '0123456789.'
     ALPHABETIC_CHARACTERS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
     KEYWORDS = ['if', 'else if', 'else', 'return']
-    multi_word_operator_parts = ['is', 'not', 'equal', 'to', 'greater', 'or', 'less', 'than']
-    multi_word_operators = ['is equal to', 
-                            'is not equal to', 
-                            'is greater than', 
-                            'is less than', 
-                            'is greater than or equal to', 
-                            'is less than or equal to']
 
     # TOKEN TYPES
     INTEGER                     = 'INT'
@@ -34,6 +27,16 @@ class Dictionary:
     GREATER_THAN_OR_EQUAL_TO    = '>='
     LESS_THAN_OR_EQUAL_TO       = '<='
 
+    multi_word_operator_parts = ['is', 'not', 'equal', 'to', 'greater', 'or', 'less', 'than']
+    multi_word_operators = {
+        'is equal to': EQUAL_TO,
+        'is not equal to': NOT_EQUAL_TO,
+        'is greater than': GREATER_THAN,
+        'is less than': LESS_THAN,
+        'is greater than or equal to': GREATER_THAN_OR_EQUAL_TO,
+        'is less than or equal to': LESS_THAN_OR_EQUAL_TO
+    }
+    
     operators = {
         '+': Token(PLUS),
         '-': Token(MINUS),

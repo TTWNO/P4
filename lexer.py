@@ -8,15 +8,6 @@ from dictionary import Dictionary
 # 'is greater than or equal to' is the longest multi-word operator
 MAX_NUMBER_OF_OPERATOR_WORDS = 6        
 
-# TODO: These imports could potentially be cleaned up
-OPERATOR_DICTIONARY             = Dictionary.operators
-MULTI_WORD_OPERATOR_DICTIONARY  = Dictionary.multi_word_operators_dictionary
-ESCAPE_DICTIONARY               = Dictionary.escape_characters
-FLOAT                           = Dictionary.FLOAT
-INTEGER                         = Dictionary.INTEGER
-NUMERIC_CHARACTERS              = set(Dictionary.NUMERIC_CHARACTERS)
-ALPHABETIC_CHARACTERS           = set(Dictionary.ALPHABETIC_CHARACTERS)
-
 logger = logging.getLogger(__name__)
 
 class Lexer:
@@ -45,16 +36,16 @@ class Lexer:
         # Loop through the input string and tokenize accordingly
         while self.current_character is not None:
             # Digits
-            if self.current_character in NUMERIC_CHARACTERS:
+            if self.current_character in Dictionary.NUMERIC_CHARACTERS:
                 tokens.append(self.digit_tokenize())
             # Arithmetic operators (single symbols)
-            elif self.current_character in OPERATOR_DICTIONARY:
-                tokens.append(OPERATOR_DICTIONARY[self.current_character])
+            elif self.current_character in Dictionary.operators:
+                tokens.append(Dictionary.operators[self.current_character])
             # Keywords, identifiers and multi-word arithmetic operators
-            elif self.current_character in ALPHABETIC_CHARACTERS:
+            elif self.current_character in Dictionary.ALPHABETIC_CHARACTERS:
                 tokens.append(self.keyword_tokenize())
             # White spaces and escape characters
-            elif self.current_character in ESCAPE_DICTIONARY:
+            elif self.current_character in Dictionary.escape_characters:
                 tokens.append(self.escape_tokenize())
             else:
                 logger.error(f"Illegal character: \'{self.current_character}\' at {self.position}")
@@ -70,7 +61,7 @@ class Lexer:
         numeral_string = ""
 
         # Loop the input string until a non-digit character is found
-        while (self.current_character is not None) and (self.current_character in NUMERIC_CHARACTERS):
+        while (self.current_character is not None) and (self.current_character in Dictionary.NUMERIC_CHARACTERS):
             if self.current_character == ".":
                 # Break out if value (numeral_string) already is a float
                 if "." in numeral_string:
@@ -82,27 +73,27 @@ class Lexer:
                 numeral_string += self.current_character
 
             # Break out if next character is not a digit
-            if self.peek() not in NUMERIC_CHARACTERS:
+            if self.peek() not in Dictionary.NUMERIC_CHARACTERS:
                 break
             else:
                 self.next_character()
 
         # Return integer or float token
         if is_float:
-            return Token(FLOAT, float(numeral_string))
+            return Token(Dictionary.FLOAT, float(numeral_string))
         else:
-            return Token(INTEGER, int(numeral_string))
+            return Token(Dictionary.INTEGER, int(numeral_string))
 
     # Tokenize keywords, identifiers and multi-word operators
     def keyword_tokenize(self):
         alphanumerical_string = ""
 
         # Loop the input string for a sequence of alphabetic characters
-        while (self.current_character is not None) and (self.current_character in ALPHABETIC_CHARACTERS or self.current_character in NUMERIC_CHARACTERS):
+        while (self.current_character is not None) and (self.current_character in Dictionary.ALPHABETIC_CHARACTERS or self.current_character in Dictionary.NUMERIC_CHARACTERS):
             alphanumerical_string += self.current_character
             
             # Break out on white spaces and escape characters
-            if self.peek() in ESCAPE_DICTIONARY:
+            if self.peek() in Dictionary.escape_characters:
                 break
             else:
                 self.next_character()
@@ -144,8 +135,8 @@ class Lexer:
         
         # Return either multi-word operator or assignment token (single-word operator)
         if alphanumerical_string in Dictionary.multi_word_operators:
-            #print(f"Returning token as multi-word operator: '{alphanumerical_string}'")
-            return Token(MULTI_WORD_OPERATOR_DICTIONARY[alphanumerical_string])
+            print(f"Returning token as multi-word operator: '{alphanumerical_string}'")
+            return Token(Dictionary.multi_word_operators[alphanumerical_string])
         elif alphanumerical_string == "is":
             return Token(Dictionary.ASSIGNMENT)
         else:
@@ -163,7 +154,7 @@ class Lexer:
             current_index += 1
 
         # Loop until next white space or escape character is found
-        while (current_index < len(self.input_string)) and (self.input_string[current_index] not in ESCAPE_DICTIONARY):
+        while (current_index < len(self.input_string)) and (self.input_string[current_index] not in Dictionary.escape_characters):
             peeked_word += self.input_string[current_index]
             current_index += 1
 
@@ -178,7 +169,7 @@ class Lexer:
 
     # Tokenize white spaces and escape characters (newline and tab)
     def escape_tokenize(self):
-        return ESCAPE_DICTIONARY.get(self.current_character)
+        return Dictionary.escape_characters.get(self.current_character)
         
 
 
@@ -246,7 +237,7 @@ class Lexer:
         while True:
             temp_string = self.peek()
             
-            if temp_string in ESCAPE_DICTIONARY:
+            if temp_string in Dictionary.escape_characters or temp_string == " ":
                 self.next_character()
                 break
             
