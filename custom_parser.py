@@ -1,61 +1,168 @@
 import logging
-
 from dictionary import Dictionary
-from parser_nodes import NumberNode, BinaryOperationNode
+from parser_nodes import AssignmentNode, ExpressionNode, NumberNode, IfNode
 
 logger = logging.getLogger(__name__)
 
 class Parser:
     def __init__(self, tokens):
-        self.tokens = tokens        # The token list we got from the lexer
-        self.current_index = 0
+        self.tokens = tokens
+        self.current_line = 0  # to keep track of the current line index
 
-    def peek(self):
-        if self.current_index < len(self.tokens):
-            return self.tokens[self.current_index]
-        return None
+    def _split_into_lines(self, tokens):
+        lines = []
+        current_line = []
+        for token in tokens:
+            if token.type == Dictionary.NEWLINE:
+                if current_line:
+                    lines.append(current_line)
+                current_line = []
+            else:
+                current_line.append(token)
+        if current_line:
+            lines.append(current_line)  # add the last line if not empty
+        return lines
 
-    def consume(self, expected_type=None):
-        current_token = self.peek()
-        if expected_type and (current_token is None or current_token.type != expected_type):
-            logger.error(f"Expected token type {expected_type} but got {current_token.type if current_token else 'None'}")
-            return None
-        self.current_index += 1
-        return current_token
+    def parse_line(self, line):
+        """Parses a single line of tokens into a node."""
+        print(f"Parsing line: {line}")
+        if not line:
+            return None  # handle empty lines
+        first_token = line[0]
+        if first_token.type == Dictionary.KEYWORD and first_token.value == 'if':
+            return self.parse_if_statement(line)
+        elif first_token.type == Dictionary.IDENTIFIER:
+            return self.parse_assignment(line)
+        else:
+            return self.parse_expression(line)
+
+
+    def parse_expression(self, tokens):
+        node, _ = self.parse_addition_subtraction(tokens)
+        return node
+
+    def parse_addition_subtraction(self, tokens):
+        node, consumed = self.parse_multiplication_division(tokens)
+        i = consumed
+        while i < len(tokens):
+            if tokens[i].type == Dictionary.PLUS or tokens[i].type == Dictionary.MINUS:
+                operator = tokens[i].type
+                i += 1
+                right, consumed_right = self.parse_multiplication_division(tokens[i:])
+                node = ExpressionNode(node, operator, right)
+                i += consumed_right
+                break  # handle multiple operations as needed
+        return node, i
+
+    def parse_multiplication_division(self, tokens):
+        node, consumed = self.parse_primary(tokens)
+        i = consumed
+        while i < len(tokens):
+            if tokens[i].type == Dictionary.MULTIPLICATION or tokens[i].type == Dictionary.DIVISION:
+                operator = tokens[i].type
+                i += 1
+                right, consumed_right = self.parse_primary(tokens[i:])
+                node = ExpressionNode(node, operator, right)
+                i += consumed_right
+            break  # handle multiple operations as needed
+        return node, i
+
+    def parse_primary(self, tokens):
+        token = tokens[0]
+        if token.type == Dictionary.INTEGER:
+            return NumberNode(token.value), 1
+        elif token.type == Dictionary.LEFT_PARENTHESES:
+            # Find matching parenthesis to handle nested cases
+            count = 1
+            idx = 1
+            while count > 0:
+                if tokens[idx].type == Dictionary.LEFT_PARENTHESES:
+                    count += 1
+                elif tokens[idx].type == Dictionary.RIGHT_PARENTHESES:
+                    count -= 1
+                idx += 1
+            # idx now is the position of the matching RIGHT_PARENTHESES
+            node = self.parse_expression(tokens[1:idx-1])
+            return node, idx  # return node and the index of the token after RIGHT_PARENTHESES
+        else:
+            raise ValueError(f"Unexpected token type {token.type}")
+
+    def parse_if_statement(self, line):
+        """Parse an if statement, assuming no block structure."""
+        # Example parsing assuming format `if condition:`
+        # if has already been parsed, next should be a single whitespace before the condition
+        if line[1].type != Dictionary.WHITE_SPACE:
+            raise ValueError("Expected whitespace after 'if'")
+        # figure out which tokens are part of the left condition
+        condition_identifiers = [Dictionary.EQUAL_TO, Dictionary.NOT_EQUAL_TO, Dictionary.GREATER_THAN, Dictionary.LESS_THAN, Dictionary.GREATER_THAN_OR_EQUAL_TO, Dictionary.LESS_THAN_OR_EQUAL_TO]
+        condition = []
+        i = 0
+        # an if statement can be a single condition or a combination of conditions
+        tokens = line[2:]
+        # remove whitespace tokens
+        tokens = [token for token in tokens if token.type != Dictionary.WHITE_SPACE]
+        while True:
+            condition_part = []
+            i = 0
+            # go until we get to the end of the tokens or find a equal to, not equal to, greater than, less than, greater than or equal to, or less than or equal to token
+            while i < len(tokens) and tokens[i].type not in condition_identifiers:
+                condition_part.append(tokens[i])
+                i += 1
+            condition.append(self.parse_expression(condition_part))
+            if i == len(tokens):
+                break
+            condition.append(tokens[i].type)
+            tokens = tokens[i+1:]
+        # advanced the line count so we can parse the body
+        self.current_line += 1
+        body = []
+        # for every line starts with a tab, parse it as a body
+        while self.current_line < len(self.lines) and self.is_indented(self.lines[self.current_line]):
+            print(f"Current line in if body at total: {self.current_line}")
+            # remove the identation token
+            line = self.lines[self.current_line][1:]
+            body.append(self.parse_line(line))
+            self.current_line += 1
+        return IfNode(condition, body)
+    
+    def parse_assignment(self, line):
+        """Parse an assignment statement."""
+        # Example parsing assuming format `variable = expression`
+        # remove whitespace tokens
+        tokens = [token for token in line if token.type != Dictionary.WHITE_SPACE]
+        # find the assignment token
+        i = 0
+        while tokens[i].type != Dictionary.ASSIGNMENT:
+            i += 1
+        # everything before the assignment token is the variable
+        # if there's more than 1 token before the assignment token, raise an error
+        if i != 1:
+            raise ValueError("Invalid assignment statement")
+        variable = tokens[0]
+        # everything after the assignment token is the expression
+        variable_value = tokens[i+1:]
+        # if we only have 1 token, and it's an identifier, we can return the variable
+        if len(variable_value) == 1 and variable_value[0].type == Dictionary.IDENTIFIER:
+            return AssignmentNode(variable, variable_value[0])
+        # otherwise, parse the expression
+        expression = self.parse_expression(variable_value)
+        return AssignmentNode(variable, expression)
+
+
+
+
+    def is_indented(self, line):
+        """Check if the line is indented (simple check based on first token being a whitespace or similar)."""
+        return line[0].type == Dictionary.INDENTATION
 
     def parse(self):
-        return self.expression()
+        # Divide the tokens into lines
+        self.lines = self._split_into_lines(self.tokens)
+        ast = []
+        while self.current_line < len(self.lines):
+            print(f"Current line: {self.current_line}")
+            ast.append(self.parse_line(self.lines[self.current_line]))
+            self.current_line += 1
+            print(f"AST: {ast}")
+        return ast
 
-    def expression(self):
-        # Start with the lower precedence operation
-        node = self.term()
-        while self.peek() and self.peek().type in ['PLUS', 'MINUS']:
-            op_token = self.consume()
-            right = self.term()
-            node = BinaryOperationNode(left=node, operator=op_token.type, right=right)
-        return node
-
-    def term(self):
-        # Handles multiplication and division with higher precedence
-        node = self.factor()
-        while self.peek() and self.peek().type in ['MULT', 'DIV']:
-            op_token = self.consume()
-            right = self.factor()
-            node = BinaryOperationNode(left=node, operator=op_token.type, right=right)
-        return node
-
-    def factor(self):
-        # Number or parenthesized expression
-        token = self.peek()
-        if token.type in [Dictionary.INTEGER, Dictionary.FLOAT]:
-            self.consume()
-            return NumberNode(token.value)
-        elif token.type == Dictionary.LEFT_PARENTHESES:
-            self.consume(Dictionary.LEFT_PARENTHESES)
-            node = self.expression()
-            self.consume(Dictionary.RIGHT_PARENTHESES)
-            return node
-        else:
-            logger.error(f"Unexpected token {token.type}")
-            return None
-        
