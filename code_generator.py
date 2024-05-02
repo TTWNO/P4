@@ -27,10 +27,22 @@ class CodeGenerator:
         return None
 
     def generate_header(self):
-        return "# HEADER"
+        return """
+import sys
+from openpyxl import load_workbook
+
+if len(sys.argv) < 2:
+    print(f"Usage: python {sys.argv[1]} <excel_file>")
+    sys.exit(1)
+
+workbook = load_workbook(filename=sys.argv[1])
+sheet = workbook.active
+"""
 
     def generate_footer(self):
-        return "# FOOTER"
+        return """
+workbook.save(filename=sys.argv[1])
+"""
 
     # Node-specific generation methods follow...
     def generate_NumberNode(self, node):
