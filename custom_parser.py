@@ -128,6 +128,8 @@ class Parser:
         if not body:
             raise ValueError(f"Expected body for if statement on line {self.current_line}")
             return None
+        # todo: Maybe find a better way to do this.
+        self.current_line -= 1 # get us to the previous line, because the outer loop will increment the line count
         return IfNode(condition, body)
     
     def parse_assignment(self, line):

@@ -11,6 +11,7 @@ class CodeGenerator:
     def generate(self, node=None, is_root=True):
         if not is_root:
             logger.debug(f'Generating code for {type(node).__name__}')
+            print(node)
             method_name = 'generate_' + type(node).__name__
             generate_method = getattr(self, method_name, self.generic_generate)
             return generate_method(node)
@@ -26,7 +27,6 @@ class CodeGenerator:
 
     def generic_generate(self, node):
         logger.error(f'No code generation method defined for {type(node).__name__}')
-        print(node)
         return None
 
     def generate_header(self):
@@ -53,9 +53,7 @@ workbook.save(filename=sys.argv[1])
 
     def generate_ExpressionNode(self, node):
         left_code = self.generate(node.left, is_root=False)
-        print(left_code)
         right_code = self.generate(node.right, is_root=False)
-        print(right_code)
         if node.operator == Dictionary.PLUS:
             operator = '+'
         elif node.operator == Dictionary.MINUS:
@@ -67,7 +65,6 @@ workbook.save(filename=sys.argv[1])
         else:
             logger.error(f'Unsupported operator {node.operator}')
             return None
-        print(f'({left_code} {operator} {right_code})')
         return f'({left_code} {operator} {right_code})'
     
     def generate_IfNode(self, node):
@@ -77,7 +74,6 @@ workbook.save(filename=sys.argv[1])
                     condition_code += condition
                 else:
                     condition_code += self.generate(condition, is_root=False)
-            print(condition_code)
             body_code = ''
             for body in node.body:
                 body_code += f"    {self.generate(body, is_root=False)}\n"

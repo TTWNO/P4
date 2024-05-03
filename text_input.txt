@@ -1,3 +1,6 @@
 (2+3)*2
+
 if cell a1  is not equal to 1
 	hello is yes
+
+variable is lol
