@@ -25,7 +25,7 @@ class Parser:
 
     def parse_line(self, line):
         """Parses a single line of tokens into a node."""
-        print(f"Parsing line: {line}")
+        #print(f"Parsing line: {line}")
         if not line:
             return None  # handle empty lines
         first_token = line[0]
@@ -118,11 +118,14 @@ class Parser:
         body = []
         # for every line starts with a tab, parse it as a body
         while self.current_line < len(self.lines) and self.is_indented(self.lines[self.current_line]):
-            print(f"Current line in if body at total: {self.current_line}")
             # remove the identation token
             line = self.lines[self.current_line][1:]
             body.append(self.parse_line(line))
             self.current_line += 1
+        # if the body is empty, raise an error
+        if not body:
+            raise ValueError(f"Expected body for if statement on line {self.current_line}")
+            return None
         return IfNode(condition, body)
     
     def parse_assignment(self, line):
@@ -160,9 +163,9 @@ class Parser:
         self.lines = self._split_into_lines(self.tokens)
         ast = []
         while self.current_line < len(self.lines):
-            print(f"Current line: {self.current_line}")
+            #print(f"Current line: {self.current_line}")
             ast.append(self.parse_line(self.lines[self.current_line]))
             self.current_line += 1
-            print(f"AST: {ast}")
+            #print(f"AST: {ast}")
         return ast
 
