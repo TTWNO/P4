@@ -76,7 +76,7 @@ workbook.save(filename=sys.argv[1])
                 if isinstance(condition, str):
                     condition_code += condition
                 else:
-                    condition_code += self.generate(condition[0], is_root=False)
+                    condition_code += self.generate(condition, is_root=False)
             print(condition_code)
             body_code = ''
             for body in node.body:
