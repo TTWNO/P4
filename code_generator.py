@@ -1,5 +1,6 @@
 import logging
 
+from Token import Token
 from dictionary import Dictionary
 
 logger = logging.getLogger(__name__)
@@ -80,12 +81,15 @@ workbook.save(filename=sys.argv[1])
             return f'if {condition_code}:\n{body_code}'
 
     def generate_AssignmentNode(self, node):
-        code = f"{node.identifier.value} = "
-        if node.value.type == Dictionary.IDENTIFIER:
-            code += f"{node.value.value}"
+        if not isinstance(node.identifier, Token):
+            identifier_code = self.generate(node.identifier, is_root=False)
         else:
-            code += f"{self.generate(node.value, is_root=False)}"
-        return code
+            identifier_code = node.identifier.value
+        if not isinstance(node.value, Token):
+            value_code = self.generate(node.value, is_root=False)
+        else:
+            value_code = node.value.value
+        return f"{identifier_code} = {value_code}"
     
     def generate_IdentifierNode(self, node):
         return node.value

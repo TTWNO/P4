@@ -25,13 +25,13 @@ class Parser:
 
     def parse_line(self, line):
         """Parses a single line of tokens into a node."""
-        #print(f"Parsing line: {line}")
+        print(f"Parsing line: {line}")
         if not line:
             return None  # handle empty lines
         first_token = line[0]
         if first_token.type == Dictionary.KEYWORD and first_token.value == 'if':
             return self.parse_if_statement(line)
-        elif first_token.type == Dictionary.IDENTIFIER:
+        elif first_token.type == Dictionary.IDENTIFIER or first_token.type == Dictionary.CELL:
             return self.parse_assignment(line)
         else:
             return self.parse_expression(line)
@@ -134,7 +134,6 @@ class Parser:
     
     def parse_assignment(self, line):
         """Parse an assignment statement."""
-        # Example parsing assuming format `variable = expression`
         # remove whitespace tokens
         tokens = [token for token in line if token.type != Dictionary.WHITE_SPACE]
         # find the assignment token
@@ -146,6 +145,9 @@ class Parser:
         if i != 1:
             raise ValueError("Invalid assignment statement")
         variable = tokens[0]
+        # if the variable is a cell reference, parse it
+        if variable.type == Dictionary.CELL:
+            variable = self.parse_cell_reference(variable)
         # everything after the assignment token is the expression
         variable_value = tokens[i+1:]
         # if we only have 1 token, and it's an identifier, we can return the variable
