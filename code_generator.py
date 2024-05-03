@@ -94,5 +94,8 @@ workbook.save(filename=sys.argv[1])
     def generate_IdentifierNode(self, node):
         return node.value
     
+    def generate_CellReferenceNode(self, node):
+        return f"sheet['{node.value}'].value"
+    
 
 

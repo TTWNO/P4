@@ -8,6 +8,7 @@ class Dictionary:
     # TOKEN TYPES
     INTEGER                     = 'INT'
     FLOAT                       = 'FLOAT'
+    CELL                        = 'CELL'
     PLUS                        = 'PLUS'
     MINUS                       = 'MINUS'
     MULTIPLICATION              = 'MULT'

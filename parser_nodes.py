@@ -57,3 +57,13 @@ class AssignmentNode(Node):
     def __str__(self):
         return self.__repr__()
     
+class CellReferenceNode(Node):
+    """Class for nodes that represent cell references."""
+    def __init__(self, value):
+        self.value = value
+
+    def __repr__(self):
+        return f"CellReferenceNode({self.value})"
+    
+    def __str__(self):
+        return self.__repr__()

@@ -101,6 +101,8 @@ class Lexer:
         # Return appropriate token
         if alphanumerical_string == "is":
             return self.handle_multi_word_operator(alphanumerical_string)
+        elif alphanumerical_string == "cell":
+            return self.handle_excel_cell()
         elif alphanumerical_string in Dictionary.KEYWORDS:
             return Token(Dictionary.KEYWORD, alphanumerical_string)
         # It wasn't a keyword, so it must be an identifier   
@@ -113,6 +115,18 @@ class Lexer:
             return self.input_string[self.position.index + 1]
         else:
             return None
+        
+    # Handle Excel cell references (e.g. 'A1', 'B2', 'C3')
+    def handle_excel_cell(self):
+        cell_reference = self.peek_word_ahead()
+        self.advance_n(len(cell_reference))
+        cell_reference = cell_reference.strip()
+        # an excel cell reference is any amount of alphabetic characters followed by any amount of numeric characters
+        # validating this will be handled in the parser
+        # advance the focus to the end of the cell reference
+        return Token(Dictionary.CELL, cell_reference)
+
+        
 
     # TODO: Could potentially be made more bullet-proof in regards to syntax errors
     # Check for multi-word operators (e.g. 'is equal to', 'is greater than')

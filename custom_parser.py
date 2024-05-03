@@ -1,6 +1,6 @@
 import logging
 from dictionary import Dictionary
-from parser_nodes import AssignmentNode, ExpressionNode, NumberNode, IfNode
+from parser_nodes import AssignmentNode, ExpressionNode, NumberNode, IfNode, CellReferenceNode
 
 logger = logging.getLogger(__name__)
 
@@ -71,6 +71,8 @@ class Parser:
         token = tokens[0]
         if token.type == Dictionary.INTEGER:
             return NumberNode(token.value), 1
+        elif token.type == Dictionary.CELL:
+            return self.parse_cell_reference(token), 1
         elif token.type == Dictionary.LEFT_PARENTHESES:
             # Find matching parenthesis to handle nested cases
             count = 1
@@ -150,6 +152,28 @@ class Parser:
         # otherwise, parse the expression
         expression = self.parse_expression(variable_value)
         return AssignmentNode(variable, expression)
+    
+    def parse_cell_reference(self, token):
+        """Parse a cell reference."""
+        # token.value should be any amount of alphabetic characters followed by any amount of numeric characters
+        # if there are no numeric characters, raise an error
+        # if there are no alphabetic characters, raise an error
+        # if there are any other characters, raise an error
+        if not token.value:
+            raise ValueError("Empty cell reference")
+        if not any(char in token.value for char in Dictionary.NUMERIC_CHARACTERS):
+            raise ValueError("Invalid cell reference")
+        if not any(char in token.value for char in Dictionary.ALPHABETIC_CHARACTERS):
+            raise ValueError("Invalid cell reference")
+        if any(char not in Dictionary.NUMERIC_CHARACTERS + Dictionary.ALPHABETIC_CHARACTERS for char in token.value):
+            raise ValueError("Invalid cell reference")
+        # there can be no numeric characters before the alphabetic characters. SO go through the string until we find a numeric character, and then check if the rest of the string is numeric
+        i = 0
+        while i < len(token.value) and token.value[i] not in Dictionary.NUMERIC_CHARACTERS:
+            i += 1
+        if not token.value[i:].isnumeric():
+            raise ValueError("Invalid cell reference")
+        return CellReferenceNode(token.value)
 
 
 
