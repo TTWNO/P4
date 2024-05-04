@@ -115,30 +115,16 @@ class Lexer:
             return self.input_string[self.position.index + 1]
         else:
             return None
-        
-    # Handle Excel cell references (e.g. 'A1', 'B2', 'C3')
-    def handle_excel_cell(self):
-        cell_reference = self.peek_word_ahead()
-        self.advance_n(len(cell_reference))
-        cell_reference = cell_reference.strip()
-        # an excel cell reference is any amount of alphabetic characters followed by any amount of numeric characters
-        # validating this will be handled in the parser
-        # advance the focus to the end of the cell reference
-        return Token(Dictionary.CELL, cell_reference)
-
-        
 
     # TODO: Could potentially be made more bullet-proof in regards to syntax errors
-    # Check for multi-word operators (e.g. 'is equal to', 'is greater than')
+    # Check for arithmetic multi-word operators (e.g. 'is equal to', 'is greater than')
     def handle_multi_word_operator(self, alphanumerical_string):       
-        # Peek ahead at most the number of words the longest multi-word operator consists of 
-        # (minus the already consumed first word ('is'))
+        # Peek ahead at most the number of words the longest arithmetic multi-word operator 
+        # consists of, minus the already consumed first word ('is')
         for _ in range(MAX_NUMBER_OF_OPERATOR_WORDS - 1):
             if self.peek() is not None:
-                #print(f"Peeking word ahead of: '{alphanumerical_string}'")
                 peeked_word = self.peek_word_ahead()
                 number_of_symbols_peeked = len(peeked_word)
-                #print(f"Number of symbols peeked: {number_of_symbols_peeked}")
 
                 # Ignore leading whitespace and check if the peeked word is a multi-word operator part
                 if peeked_word[1:] in Dictionary.multi_word_operator_parts:
@@ -149,7 +135,6 @@ class Lexer:
         
         # Return either multi-word operator or assignment token (single-word operator)
         if alphanumerical_string in Dictionary.multi_word_operators:
-            print(f"Returning token as multi-word operator: '{alphanumerical_string}'")
             return Token(Dictionary.multi_word_operators[alphanumerical_string])
         elif alphanumerical_string == "is":
             return Token(Dictionary.ASSIGNMENT)
@@ -172,8 +157,6 @@ class Lexer:
             peeked_word += self.input_string[current_index]
             current_index += 1
 
-        #print(f"Peeked word: '{peeked_word}'")
-
         return peeked_word
 
     # Advance n-characters in the input
@@ -181,91 +164,20 @@ class Lexer:
         for _ in range(n):
             self.next_character()
 
+    # Handle Excel cell references (e.g. 'A1', 'B2', 'C3')
+    # An Excel cell reference is any amount of alphabetic characters followed by any 
+    # amount of numeric characters (validating this will be handled in the parser).
+    def handle_excel_cell(self):
+        cell_reference = self.peek_word_ahead()
+        
+        # Advance the focus to the end of the cell reference
+        self.advance_n(len(cell_reference))
+        
+        # Strip leading and trailing white spaces
+        cell_reference = cell_reference.strip()
+        
+        return Token(Dictionary.CELL, cell_reference)
+    
     # Tokenize white spaces and escape characters (newline and tab)
     def escape_tokenize(self):
         return Dictionary.escape_characters.get(self.current_character)
-        
-
-
-
-
-        
-# Jessica's solution 
-""" if alphanumerical_string in Dictionary.KEYWORDS:
-            if alphanumerical_string != "is":
-                print(f"Returning keyword: {alphanumerical_string}")
-                return Token(Dictionary.KEYWORD, alphanumerical_string)
-            else: 
-                # First part of a multi-word operator
-                multi_word_keyword = "is "
-
-                # Skip whitespace after is
-                self.next_character()
-
-                while True:
-                    word = self.peek_until_escape_character()
-                    
-                    if word in Dictionary.multi_word_operator_parts:
-                        multi_word_keyword += word + " "
-                        continue
-                    else: 
-                        # Remove trailing space in the string
-                        multi_word_keyword = multi_word_keyword.strip()
-
-                        # Go back to before the token we couldn't use, so this loop doesn't swallow it 
-                        self.go_back_n(len(word) + 1) 
-                        break
-                
-                # We have a multi-word keyword to work with.
-                if multi_word_keyword not in Dictionary.multi_word_operators:
-                    
-                    # There was an error in the input
-                    self.go_back_n(len(multi_word_keyword))
-                    logger.error(f"Syntax error: Invalid multi-word operator: {multi_word_keyword} at {self.position}")
-                    return None
-                
-                # It worked before, when we compared each multi word keyboard individually
-                for x in range(len(Dictionary.multi_word_operators)):
-                    print(f"Comparing {multi_word_keyword} to {Dictionary.multi_word_operators[x]}")
-                    if multi_word_keyword == Dictionary.multi_word_operators[x]:
-                        return Token(Dictionary.multi_word_operators[x], multi_word_keyword)
-                    
-                # We did not find a match in the multi-word operators
-                logger.error(f"Syntax error: Invalid multi-word operator: {multi_word_keyword} at {self.position}")
-                return None """
-
-""" 
-    # Move focus back to the previous character in the input
-    def previous_character(self):
-        # Decrement position
-        self.position.decrement()
-
-        # Update current character
-        if self.position.index >= 0:
-            self.current_character = self.input_string[self.position.index]
-
-    # Peek until white space or escape character is found
-    def peek_until_escape_character(self):
-        peeked_string = ""
-        
-        while True:
-            temp_string = self.peek()
-            
-            if temp_string in Dictionary.escape_characters or temp_string == " ":
-                self.next_character()
-                break
-            
-            print(f"Peeking: {temp_string}")
-            if temp_string is None:
-                break
-            else:
-                peeked_string += temp_string
-                self.next_character()
-                
-        return peeked_string 
-        
-    # Go back n-characters in the input
-    def go_back_n(self, n):
-        for _ in range(n):
-            self.previous_character()
-"""

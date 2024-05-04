@@ -1,8 +1,8 @@
 from Token import Token
 
 class Dictionary:
-    NUMERIC_CHARACTERS  = '0123456789.'
-    ALPHABETIC_CHARACTERS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    NUMERIC_CHARACTERS  = set('0123456789.')
+    ALPHABETIC_CHARACTERS = set('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
     KEYWORDS = ['if', 'else if', 'else', 'return']
 
     # TOKEN TYPES
