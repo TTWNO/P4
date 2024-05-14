@@ -1,2 +1,5 @@
 if 2 + 40 is equal to 42
-	x is 69
+	x is "Skynet status: online"
+	y is 'Oh shit!'
+
+cell R2D2 is 1337

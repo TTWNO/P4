@@ -39,11 +39,14 @@ class Lexer:
             if self.current_character in Dictionary.NUMERIC_CHARACTERS:
                 tokens.append(self.digit_tokenize())
             # Arithmetic operators (single symbols)
-            elif self.current_character in Dictionary.operators:
-                tokens.append(Dictionary.operators[self.current_character])
+            elif self.current_character in Dictionary.arithmetic_operators:
+                tokens.append(Dictionary.arithmetic_operators[self.current_character])
             # Keywords, identifiers and multi-word arithmetic operators
             elif self.current_character in Dictionary.ALPHABETIC_CHARACTERS:
                 tokens.append(self.keyword_tokenize())
+            # Strings
+            elif self.current_character == "\"" or self.current_character == "\'":
+                tokens.append(self.string_tokenize())
             # White spaces and escape characters
             elif self.current_character in Dictionary.escape_characters:
                 tokens.append(self.escape_tokenize())
@@ -181,3 +184,18 @@ class Lexer:
     # Tokenize white spaces and escape characters (newline and tab)
     def escape_tokenize(self):
         return Dictionary.escape_characters.get(self.current_character)
+    
+    # Generate string token (e.g. STR:'Hasta la vista, baby.' or STR:"Say hello to my little friend!")
+    def string_tokenize(self):
+        string = ""
+        quote_type = self.current_character     # Single or double quote
+        self.next_character()
+
+        while (self.current_character is not None) and (self.current_character != quote_type):
+            string += self.current_character
+            self.next_character()
+
+        # Add opening and closing quotes to string
+        string = quote_type + string + quote_type
+
+        return Token(Dictionary.STRING, string)

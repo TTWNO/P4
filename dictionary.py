@@ -10,6 +10,7 @@ class Dictionary:
     FLOAT                       = 'FLOAT'
     CELL                        = 'CELL'
     PLUS                        = 'PLUS'
+    STRING                      = 'STR'
     MINUS                       = 'MINUS'
     MULTIPLICATION              = 'MULT'
     DIVISION                    = 'DIV'
@@ -29,6 +30,8 @@ class Dictionary:
     LESS_THAN_OR_EQUAL_TO       = '<='
 
     multi_word_operator_parts = ['is', 'not', 'equal', 'to', 'greater', 'or', 'less', 'than']
+    
+    # TODO: Can this be optimized?
     multi_word_operators = {
         'is equal to': EQUAL_TO,
         'is not equal to': NOT_EQUAL_TO,
@@ -38,7 +41,7 @@ class Dictionary:
         'is less than or equal to': LESS_THAN_OR_EQUAL_TO
     }
     
-    operators = {
+    arithmetic_operators = {
         '+': Token(PLUS),
         '-': Token(MINUS),
         '*': Token(MULTIPLICATION),
@@ -49,6 +52,7 @@ class Dictionary:
         'is': Token(ASSIGNMENT)
     }
 
+    # TODO: Isn't this redundant?
     multi_word_operators_dictionary = {
         'is equal to': Token(EQUAL_TO),
         'is not equal to': Token(NOT_EQUAL_TO),
