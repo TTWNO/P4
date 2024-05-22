@@ -2,4 +2,4 @@ if 2 + 40 is equal to 42
 	x is "Skynet status: online"
 	y is 'Oh shit!'
 
-cell R2D2 is 1337
+cell a2 is 1337

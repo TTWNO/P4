@@ -33,6 +33,17 @@ class NumberNode(Node):
     def __str__(self):
         return self.__repr__()
 
+class StringNode(Node):
+    """Class for nodes that represent strings (str)."""
+    def __init__(self, value):
+        self.value = value
+
+    def __repr__(self):
+        return f"StringNode({self.value})"
+    
+    def __str__(self):
+        return self.__repr__()
+
 class IfNode(Node):
     """Class for nodes that represent if statements."""
     def __init__(self, condition, body):

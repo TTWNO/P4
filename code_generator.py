@@ -52,6 +52,9 @@ workbook.save(filename=sys.argv[1])
     def generate_NumberNode(self, node):
         return str(node.value)
 
+    def generate_StringNode(self, node):
+        return str(node.value)
+
     def generate_ExpressionNode(self, node):
         left_code = self.generate(node.left, is_root=False)
         right_code = self.generate(node.right, is_root=False)

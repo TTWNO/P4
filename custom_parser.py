@@ -1,6 +1,6 @@
 import logging
 from dictionary import Dictionary
-from parser_nodes import AssignmentNode, ExpressionNode, NumberNode, IfNode, CellReferenceNode
+from parser_nodes import AssignmentNode, ExpressionNode, NumberNode, StringNode, IfNode, CellReferenceNode
 
 logger = logging.getLogger(__name__)
 
@@ -71,6 +71,8 @@ class Parser:
         token = tokens[0]
         if token.type == Dictionary.INTEGER:
             return NumberNode(token.value), 1
+        elif token.type == Dictionary.STRING:
+            return StringNode(token.value), 1
         elif token.type == Dictionary.CELL:
             return self.parse_cell_reference(token), 1
         elif token.type == Dictionary.LEFT_PARENTHESES:
@@ -146,11 +148,13 @@ class Parser:
             raise ValueError("Invalid assignment statement")
         variable = tokens[0]
         # if the variable is a cell reference, parse it
+        print(variable.type)
         if variable.type == Dictionary.CELL:
             variable = self.parse_cell_reference(variable)
         # everything after the assignment token is the expression
         variable_value = tokens[i+1:]
         # if we only have 1 token, and it's an identifier, we can return the variable
+        print(variable_value[0].type)
         if len(variable_value) == 1 and variable_value[0].type == Dictionary.IDENTIFIER:
             return AssignmentNode(variable, variable_value[0])
         # otherwise, parse the expression
@@ -169,7 +173,7 @@ class Parser:
             raise ValueError("Invalid cell reference")
         if not any(char in token.value for char in Dictionary.ALPHABETIC_CHARACTERS):
             raise ValueError("Invalid cell reference")
-        if any(char not in Dictionary.NUMERIC_CHARACTERS + Dictionary.ALPHABETIC_CHARACTERS for char in token.value):
+        if any(char not in Dictionary.NUMERIC_CHARACTERS | Dictionary.ALPHABETIC_CHARACTERS for char in token.value):
             raise ValueError("Invalid cell reference")
         # there can be no numeric characters before the alphabetic characters. SO go through the string until we find a numeric character, and then check if the rest of the string is numeric
         i = 0
