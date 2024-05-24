@@ -180,7 +180,9 @@ class Lexer:
         cell_reference = cell_reference.strip()
         
         return Token(Dictionary.CELL, cell_reference)
-    
+
+    # TODO: We should probably return the token from within this method instead of from inside the dictionary,
+    #  as well as a token value (instead of None)
     # Tokenize white spaces and escape characters (newline and tab)
     def escape_tokenize(self):
         return Dictionary.escape_characters.get(self.current_character)
