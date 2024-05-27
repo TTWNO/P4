@@ -38,6 +38,8 @@ class Parser:
 
 
     def parse_expression(self, tokens):
+        # remove all ws tokens
+        tokens = [token for token in tokens if token.type != Dictionary.WHITE_SPACE]
         node, _ = self.parse_addition_subtraction(tokens)
         return node
 
