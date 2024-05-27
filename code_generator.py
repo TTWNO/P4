@@ -36,7 +36,7 @@ import sys
 from openpyxl import load_workbook
 
 if len(sys.argv) < 2:
-    print(f"Usage: python {sys.argv[1]} <excel_file>")
+    print(f"Usage: python {sys.argv[0]} <excel_file>")
     sys.exit(1)
 
 workbook = load_workbook(filename=sys.argv[1])
