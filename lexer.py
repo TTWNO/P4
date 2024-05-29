@@ -119,7 +119,6 @@ class Lexer:
         else:
             return None
 
-    # TODO: Could potentially be made more bullet-proof in regards to syntax errors
     # Check for arithmetic multi-word operators (e.g. 'is equal to', 'is greater than')
     def handle_multi_word_operator(self, alphanumerical_string):       
         # Peek ahead at most the number of words the longest arithmetic multi-word operator 
@@ -181,8 +180,6 @@ class Lexer:
         
         return Token(Dictionary.CELL, cell_reference)
 
-    # TODO: We should probably return the token from within this method instead of from inside the dictionary,
-    #  as well as a token value (instead of None)
     # Tokenize white spaces and escape characters (newline and tab)
     def escape_tokenize(self):
         return Dictionary.escape_characters.get(self.current_character)

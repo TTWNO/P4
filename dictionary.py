@@ -40,7 +40,6 @@ class Dictionary:
         'is less than or equal to': LESS_THAN_OR_EQUAL_TO
     }
 
-    # TODO: Tokenization should probably be handled within the method itself in the Lexer
     arithmetic_operators = {
         '+': Token(PLUS),
         '-': Token(MINUS),
@@ -52,7 +51,6 @@ class Dictionary:
         'is': Token(ASSIGNMENT)
     }
 
-    # TODO: Tokenization should probably be handled within the method itself in the Lexer
     multi_word_operators_dictionary = {
         'is equal to': Token(EQUAL_TO),
         'is not equal to': Token(NOT_EQUAL_TO),
@@ -62,7 +60,6 @@ class Dictionary:
         'is less than or equal to': Token(LESS_THAN_OR_EQUAL_TO)
     }
 
-    # TODO: Tokenization should probably be handled within the method itself in the Lexer
     escape_characters = {
         '\n': Token(NEWLINE),
         '\t': Token(INDENTATION),

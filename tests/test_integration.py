@@ -1,6 +1,3 @@
-# As of right now all tests can be run by either one of the following commands in the terminal:
-# python -m unittest discover -s ./tests -p test_*.py
-# python -m unittest discover -s tests
 from unittest import TestCase
 import subprocess
 import os

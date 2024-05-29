@@ -74,3 +74,9 @@ poetry run pyinstaller compiler.mac.spec
 
 The compiled binary will be in the dist folder
 
+### Unit Testing
+As of right now all tests can be run by either one of the following commands in the terminal:
+```
+python -m unittest discover -s ./tests -p test_*.py
+python -m unittest discover -s tests
+```
