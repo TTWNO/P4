@@ -46,7 +46,7 @@ poetry run python compiler.py <path to the file to compile>
 
 ```
 
-### Updaing the compiler
+### Updating the compiler
 
 To update the compiler, you can use the following command.
 
@@ -56,6 +56,17 @@ To update the compiler, you can use the following command.
 
 git pull
 poetry install
+
+```
+
+### Running the tests
+
+To run the tests, you can use the following command.
+
+**Note:** You need to have completed the installation steps above.
+
+```
+poetry run python -m unittest discover -s tests
 
 ```
 
